@@ -1,35 +1,57 @@
-const socket = io("/");
-const videGrid = document.getElementById("video-grid");
-console.log(videGrid);
+const socket = io("/", { transports: ["polling"] });
+const videoGrid = document.getElementById("video-grid");
+const myPeer = new Peer();
 const myVideo = document.createElement("video");
-myVideo.mute = true;
+myVideo.muted = true;
+const peers = {};
 
-let myVideoStram;
-// 사용자에게 장치 사용 권한 요청
 navigator.mediaDevices
   .getUserMedia({
     video: true,
     audio: true,
   })
   .then((stream) => {
-    myVideoStram = stream;
     addVideoStream(myVideo, stream);
+
+    myPeer.on("call", (call) => {
+      call.answer(stream);
+      const video = document.createElement("video");
+      call.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream);
+      });
+    });
+
+    socket.on("user-connected", (userId) => {
+      connectToNewUser(userId, stream);
+    });
   });
 
-socket.emit("join-room", ROOM_ID);
-
-socket.on("user-connected", () => {
-  connectToNewUser();
+socket.on("user-disconnected", (userId) => {
+  if (peers[userId]) peers[userId].close();
 });
 
-const connectToNewUser = () => {
-  console.log("new user");
-};
+myPeer.on("open", (id) => {
+  console.log("voice chat on!");
+  socket.emit("join-room", ROOM_ID, id);
+});
 
-const addVideoStream = (video, stream) => {
+function connectToNewUser(userId, stream) {
+  const call = myPeer.call(userId, stream);
+  const video = document.createElement("video");
+  call.on("stream", (userVideoStream) => {
+    addVideoStream(video, userVideoStream);
+  });
+  call.on("close", () => {
+    video.remove();
+  });
+
+  peers[userId] = call;
+}
+
+function addVideoStream(video, stream) {
   video.srcObject = stream;
   video.addEventListener("loadedmetadata", () => {
     video.play();
   });
-  videGrid.append(video);
-};
+  videoGrid.append(video);
+}
