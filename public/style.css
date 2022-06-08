@@ -1,3 +1,9 @@
+body {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 #video-grid {
   display: flex;
   justify-content: center;
@@ -7,4 +13,27 @@ video {
   height: 300px;
   width: 400px;
   object-fit: cover;
+}
+
+.main {
+  height: 100vh;
+  display: flex;
+}
+
+.main__left {
+  flex: 0.8;
+  display: flex;
+  flex-direction: column;
+}
+
+.main__right {
+  float: 0.2;
+}
+
+.main__videos {
+  flex-grow: 1;
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
