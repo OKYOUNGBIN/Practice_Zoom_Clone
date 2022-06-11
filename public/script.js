@@ -28,6 +28,23 @@ navigator.mediaDevices
     socket.on("user-connected", (userId) => {
       connectToNewUser(userId, stream);
     });
+
+    let text = $("input");
+
+    $("html").keydown((e) => {
+      if (e.which == 13 && text.val().length !== 0) {
+        console.log(text.val());
+        socket.emit("message", text.val());
+        text.val("");
+      }
+    });
+
+    socket.on("createMessage", (message) => {
+      $(".messages").append(
+        `<li class="message"<b>user</b></br>${message}</li>`
+      );
+      scrollToBottom();
+    });
   });
 
 myPeer.on("open", (id) => {
@@ -50,3 +67,8 @@ function addVideoStream(video, stream) {
   });
   videoGrid.append(video);
 }
+
+const scrollToBottom = () => {
+  var d = $(".main__chat_window");
+  d.scrollTop(d.prop("scrollHeight"));
+};
