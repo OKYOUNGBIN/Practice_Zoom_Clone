@@ -11,10 +11,10 @@ let myVideoStram;
 navigator.mediaDevices
   .getUserMedia({
     video: true,
-    audio: false,
+    audio: true,
   })
   .then((stream) => {
-    //myVideoStram = stream;
+    myVideoStram = stream;
     addVideoStream(myVideo, stream);
 
     myPeer.on("call", (call) => {
@@ -71,4 +71,32 @@ function addVideoStream(video, stream) {
 const scrollToBottom = () => {
   var d = $(".main__chat_window");
   d.scrollTop(d.prop("scrollHeight"));
+};
+
+// const muteBtn = document.querySelector(".main__mute_button");
+// muteBtn.addEventListener("click", muteUnMute);
+
+const muteUnMute = () => {
+  const setMuteButton = () => {
+    const html = `<i class="fas fa-microphone"></i>
+    <span>Mute</span>`;
+
+    document.querySelector(".main__mute_button").innerHTML = html;
+  };
+
+  const setUnmuteButton = () => {
+    const html = `<i class="unmute fas fa-microphone-slash"></i>
+    <span>Unmute</span>`;
+
+    document.querySelector(".main__mute_button").innerHTML = html;
+  };
+
+  const enabled = myVideoStram.getAudioTracks()[0].enabled;
+  if (enabled) {
+    myVideoStram.getAudioTracks()[0].enabled = false;
+    setUnmuteButton();
+  } else {
+    setMuteButton();
+    myVideoStram.getAudioTracks()[0].enabled = true;
+  }
 };
