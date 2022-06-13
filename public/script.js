@@ -4,7 +4,11 @@ const myVideo = document.createElement("video");
 myVideo.mute = true;
 
 // undefined : 자동생성
-const myPeer = new Peer();
+const myPeer = new Peer(undefined, {
+  path: "/peerjs",
+  host: "/",
+  port: "443",
+});
 
 let myVideoStream;
 // 사용자에게 장치 사용 권한 요청
