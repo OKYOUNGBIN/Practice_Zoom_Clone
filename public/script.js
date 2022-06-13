@@ -6,7 +6,7 @@ myVideo.mute = true;
 // undefined : 자동생성
 const myPeer = new Peer();
 
-let myVideoStram;
+let myVideoStream;
 // 사용자에게 장치 사용 권한 요청
 navigator.mediaDevices
   .getUserMedia({
@@ -14,7 +14,7 @@ navigator.mediaDevices
     audio: true,
   })
   .then((stream) => {
-    myVideoStram = stream;
+    myVideoStream = stream;
     addVideoStream(myVideo, stream);
 
     myPeer.on("call", (call) => {
@@ -73,9 +73,6 @@ const scrollToBottom = () => {
   d.scrollTop(d.prop("scrollHeight"));
 };
 
-// const muteBtn = document.querySelector(".main__mute_button");
-// muteBtn.addEventListener("click", muteUnMute);
-
 const muteUnMute = () => {
   const setMuteButton = () => {
     const html = `<i class="fas fa-microphone"></i>
@@ -91,12 +88,38 @@ const muteUnMute = () => {
     document.querySelector(".main__mute_button").innerHTML = html;
   };
 
-  const enabled = myVideoStram.getAudioTracks()[0].enabled;
+  const enabled = myVideoStream.getAudioTracks()[0].enabled;
   if (enabled) {
-    myVideoStram.getAudioTracks()[0].enabled = false;
+    myVideoStream.getAudioTracks()[0].enabled = false;
     setUnmuteButton();
   } else {
     setMuteButton();
-    myVideoStram.getAudioTracks()[0].enabled = true;
+    myVideoStream.getAudioTracks()[0].enabled = true;
   }
+};
+
+const playStop = () => {
+  console.log("object");
+  let enabled = myVideoStream.getVideoTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getVideoTracks()[0].enabled = false;
+    setStopVideo();
+  } else {
+    setPlayVideo();
+    myVideoStream.getVideoTracks()[0].enabled = true;
+  }
+};
+
+const setPlayVideo = () => {
+  const html = `<i class="fas fa-video"></i>
+  <span>Play Video</span>`;
+
+  document.querySelector(".main__video_button").innerHTML = html;
+};
+
+const setStopVideo = () => {
+  const html = `<i class="stopVideo fas fa-video-slash"></i>
+  <span>Stop Video</span>`;
+
+  document.querySelector(".main__video_button").innerHTML = html;
 };
